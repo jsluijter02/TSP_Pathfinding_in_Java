@@ -1,15 +1,19 @@
+import java.util.List;
+
 public class TSP {
-    
-    public int max_locations = 10;
-    public int num_locations;
+
+    public Clickable_Panel panel; 
     //panel object? so it can see which things we need
 
-    public TSP(){
-
+    public TSP(Clickable_Panel c){
+        this.panel = c; 
     }
 
     public void Solve(){
+        //get all the locations
+        List<Point> locations = panel.locations;
 
+        
     }
 
 }
