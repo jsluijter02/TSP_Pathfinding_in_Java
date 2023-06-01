@@ -5,40 +5,21 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class Clickable_Panel extends JPanel{
     
-    public int max_locations = 10;
-    public int num_locations = 0;
-    public List<Point> locations; 
-
-    public BufferedImage fullimg;
+    public Map map; //implement map class
     private BufferedImage renderimg;
 
     private Point og;
     private Point renderimgcoords; 
     
-    public Clickable_Panel(){
-        this.max_locations = 10;
-        this.num_locations = 0; 
-
-        this.locations = new ArrayList<Point>();
-
-        try{
-            this.fullimg = ImageIO.read(new File("src/Map/GTAV_ATLUS_2048x2048.png"));
-            this.renderimgcoords= new Point(500, 1500);
-            this.renderimg = fullimg.getSubimage(renderimgcoords.x,renderimgcoords.y,780,400);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+    public Clickable_Panel(Map map){
+        this.map = map;
+        this.renderimgcoords= new Point(500, 1500);
+        this.renderimg = map.map_image.getSubimage(renderimgcoords.x,renderimgcoords.y,780,400);
 
         addMouseListener(new MouseAdapter() {
             //for the mouse dragged method, we need to know the og x and y, so we can calculate how much we change when dragging the map
@@ -47,36 +28,52 @@ public class Clickable_Panel extends JPanel{
                 og = new Point(m.getPoint()); 
             }
 
-            //when we click the panel we want it to generate a point
+            //when we click the panel we want it to generate a point, but only if we have less than the max points,
+            //and the point is clicked on a road
             @Override
             public void mouseClicked(MouseEvent m){
 
-                if(num_locations < max_locations)
+                if(map.num_locations < map.max_locations)
                 {
-                    locations.add(new Point(m.getX(), m.getY()));
-                    num_locations++; 
-                    repaint();
+                    //calculate what the location is on the full map 
+                    int locationx = renderimgcoords.x + m.getX();
+                    int locationy = renderimgcoords.y + m.getY();
+
+                    boolean is_road = map.isRoad(locationx, locationy);
+
+                    //if the location clicked is a road, we add it to the list of locations
+                    if(is_road){
+                        map.locations.add(new Point(locationx, locationy));
+                        map.num_locations++; 
+                        repaint();
+                    }
                 }
             } 
         });
 
         //when dragging the mouse, we want to show a different part of the map. 
         addMouseMotionListener(new MouseMotionAdapter() {
+            
+            //mousedragged changes the part of the map shown
             @Override 
             public void mouseDragged(MouseEvent m){
 
+                //it gets the current point where the mouse is and checks against the original point how far the mouse has travelled
                 Point current = m.getPoint();
                 int xchange = og.x - current.x; 
                 int ychange = og.y - current.y;
                 
-                renderimgcoords.x = Math.max(0, Math.min(renderimgcoords.x+xchange,fullimg.getWidth() - 780));
-                renderimgcoords.y = Math.max(0, Math.min(renderimgcoords.y+ychange,fullimg.getHeight() - 400));
+                //calculate the new image coords
+                renderimgcoords.x = Math.max(0, Math.min(renderimgcoords.x+xchange,map.map_image.getWidth() - 780));
+                renderimgcoords.y = Math.max(0, Math.min(renderimgcoords.y+ychange,map.map_image.getHeight() - 400));
 
-                renderimg = fullimg.getSubimage(renderimgcoords.x, renderimgcoords.y, 780,400);
+                renderimg = map.map_image.getSubimage(renderimgcoords.x, renderimgcoords.y, 780,400);
 
                 og = new Point(current.x, current.y);
                 repaint(); 
+
             }
+
         });
 
     }
@@ -87,16 +84,49 @@ public class Clickable_Panel extends JPanel{
         super.paintComponent(g);
         g.drawImage(this.renderimg, 0, 0, null);
         g.setColor(Color.black);
-        for ( Point loca : locations) {
-            g.fillOval(loca.x-5, loca.y-5, 10, 10);
+
+        //checks whether the point should be drawn on screen by checking its coordinates and then drawing the on screen 
+        for ( Point loca : map.locations) {
+
+            //if they fall between the rendered image coordinates, we want to draw them to the screen
+            if(insideRenderBounds(loca.x, loca.y)){
+
+                g.fillOval(loca.x-renderimgcoords.x-5, loca.y-renderimgcoords.y-5, 10, 10);
+
+            }
         }
 
+        //highlightRoads(g, Color.orange);
     }
 
+    //deletes all the points on the panel
     public void WipePanel(){
-        this.num_locations = 0;
-        this.locations = new ArrayList<Point>();
+        map.num_locations = 0;
+        map.locations = new ArrayList<Point>();
         repaint();
     }
 
+    //function that makes all the road pixels black
+    private void highlightRoads(Graphics g, Color c){
+        g.setColor(c);
+        for(int i = 0; i < map.map_image.getWidth(); i++){
+
+            for(int j = 0; j < map.map_image.getHeight(); j++){
+
+                if(map.isRoad(i, j) && insideRenderBounds(i, j)){
+                    g.fillRect(i - renderimgcoords.x, j-renderimgcoords.y, 1, 1);
+                }
+            }
+        }
+    }
+
+    //a function that helps to decide wether coords are inside of the render box or not
+    private boolean insideRenderBounds(int x, int y){
+            
+        return x >= renderimgcoords.x && 
+            x <= renderimgcoords.x+780 && 
+            y >= renderimgcoords.y && 
+            y <= renderimgcoords.y + 400;
+
+    }
 }
