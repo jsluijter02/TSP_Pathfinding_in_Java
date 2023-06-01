@@ -1,3 +1,5 @@
+import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class TSP {
@@ -12,7 +14,7 @@ public class TSP {
     public void Solve(){
         //get all the locations
         List<Point> locations = panel.locations;
-
+        BufferedImage map = panel.fullimg; 
         
     }
 
