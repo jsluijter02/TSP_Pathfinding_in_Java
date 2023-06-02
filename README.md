@@ -1,2 +1,2 @@
-## A project in works for a TSP visualization in Java
+## A project in works for a TSP visualization/ Pathfinding in Java
 
