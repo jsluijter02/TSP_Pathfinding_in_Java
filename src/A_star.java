@@ -1,9 +1,12 @@
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.PriorityQueue;
+
+////////////////////////////////////////////////////////////////////////////////////
+/// A* algorithm class for pathfinding, 
+/// 
+////////////////////////////////////////////////////////////////////////////////////
 
 public class A_star {
     Node start; 
@@ -38,27 +41,31 @@ public class A_star {
 
         HashSet<Node> visited = new HashSet<Node>();
         
+        // Loop for the A* algorithm until we either find the path,
+        // or we return nothing if no path is found
         while(!next_up.isEmpty()){
+
             //1. select (with lowest f(n)), done with compareTo in Node class
             //get node from priority queue
             Node next  = next_up.poll();
 
-            //System.out.println("Processing node at location: " + next.location);
             //if the node we selected is the goal node, we return the path, so we can draw it
             if(next.location.equals(this.end.location)){
 
                 System.out.println("End node found!");
-
                 return extract_path(this.end); 
+
             }
 
             //if we already processed this node we don't bother
             if(visited.contains(next)){
                 continue;
             }
+
             //move current node to the visited set
             visited.add(next);
             
+
             //2. expand
             //we check all directions next to the pixel whether we can go there
             for(int[] dir : directions){
@@ -66,6 +73,8 @@ public class A_star {
                 int x = next.location.x + dir[0];
                 int y = next.location.y + dir[1];
 
+                //if that direction is a road we check whether we can add it to the queue and what its g,
+                //h and f scores would be. If it is not in visited we add it to the queue. 
                 if(map.isRoad(x, y)){
                     
                     Node new_node;
@@ -84,23 +93,23 @@ public class A_star {
                     }
 
                     else{
+                        //if we have already seen the node, we get it fron the nodes[x][y] entry, 
+                        //and we check if we found a better route
                         new_node = nodes[x][y];
 
                         double new_g_score = next.g_score + 1; 
 
+                        //if we find a shorter route to the node, we update the g and f scores
                         if(new_g_score < new_node.g_score){
                             new_node.previous_node = next; 
-                            ////System.out.println("gscore before: "+ new_node.g_score);
                             new_node.g_score = new_g_score;
-                            //System.out.println("gscore after: " + new_node.g_score);
                             new_node.f_score = new_node.g_score + new_node.h_score; 
                         }
                     }
 
-
+                    //we add this new found node to the queue if we haven't 
                     if(!visited.contains(new_node)){
                         next_up.add(new_node);
-                        //System.out.println("Adding node at location: " + new_node.location + " to the queue");
                     }
 
                 }
@@ -117,13 +126,13 @@ public class A_star {
 
         while(node != null){
             path.add(node.location);
-            //System.out.println("Add to path:" + node.location);
             node = node.previous_node; 
         }
 
         return path; 
     }
 
+    //a function to check wether we have already seen this node before 
     private boolean node_empty(int x, int y){
         return nodes[x][y] == null; 
     }
@@ -145,17 +154,4 @@ public class A_star {
         return Math.sqrt(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2));
     }
 
-    public void draw_path(Graphics g, Color c, Point renderimgcoords){
-        
-        g.setColor(c);
-        for(Point p : this.path){
-            if(p.x >= renderimgcoords.x && 
-            p.x <= renderimgcoords.x+780 && 
-            p.y >= renderimgcoords.y && 
-            p.y <= renderimgcoords.y + 400)
-
-            g.fillOval(p.x - renderimgcoords.x - 1, p.y - renderimgcoords.y - 1,5, 5);
-        }
-
-    }
 }

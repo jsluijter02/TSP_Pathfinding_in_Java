@@ -21,7 +21,7 @@ public class Node implements Comparable<Node>{
         return Double.compare(this.f_score, other.f_score); 
     }
 
-    //We can change the g_score in
+    //So we can change the g_score and the algo won't get stuck in an infinite loop, because we changed the object.
     @Override
     public int hashCode() {
         return Objects.hash(location);

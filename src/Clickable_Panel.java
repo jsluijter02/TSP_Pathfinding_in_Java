@@ -5,40 +5,30 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Random;
-
 import javax.swing.JPanel;
 
 public class Clickable_Panel extends JPanel{
     
-    public Map map; //implement map class
+    public Map map;
     private BufferedImage renderimg;
 
     private Point og;
     private Point renderimgcoords; 
-    
-    A_star A;
 
+    public boolean solve = false; 
 
     public Clickable_Panel(Map map){
+
         this.map = map;
 
-        //TODO REMOVE::
-            //TODO remove this:
-        Point p1 = randomPointRoad();//new Point(1047, 1578);
-        Point p2 = randomPointRoad();//new Point(1180, 1554);
-   
-        this.map.locations.add(p1);
-        this.map.locations.add(p2);
-        this.map.num_locations += 2; 
-
-
+        //Get the part of the map that we want to render to the screen
         this.renderimgcoords= new Point(500, 1500);
         this.renderimg = map.map_image.getSubimage(renderimgcoords.x,renderimgcoords.y,780,400);
 
-        A = new A_star(this.map, p1, p2); 
 
+        //
+        // get mouse commands, so we know when to add a location and when to scroll the map to a new map fragment
+        //
         addMouseListener(new MouseAdapter() {
             //for the mouse dragged method, we need to know the og x and y, so we can calculate how much we change when dragging the map
             @Override
@@ -69,11 +59,13 @@ public class Clickable_Panel extends JPanel{
                         }
 
                         map.num_locations++; 
+                        solve = false;
                         repaint();
                     }
                 }
             } 
         });
+
 
         //when dragging the mouse, we want to show a different part of the map. 
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -102,11 +94,19 @@ public class Clickable_Panel extends JPanel{
 
     }
 
+
     @Override
     protected void paintComponent(Graphics g){
 
         super.paintComponent(g);
         g.drawImage(this.renderimg, 0, 0, null);
+
+
+        //TODO draw the path found
+        if(solve){
+            map.draw_path(g, Color.orange, renderimgcoords);
+        }
+
         g.setColor(Color.black);
 
         //checks whether the point should be drawn on screen by checking its coordinates and then drawing the on screen 
@@ -120,17 +120,6 @@ public class Clickable_Panel extends JPanel{
             }
         }
 
-        //TODO remove
-        A.draw_path(g, Color.orange, renderimgcoords);
-    }
-
-    //deletes all the points on the panel
-    //TODO remove Astar calculations and objects as well.
-    public void WipePanel(){
-        map.num_locations = 0;
-        map.locations = new ArrayList<Point>();
-        A.path = new ArrayList<Point>();
-        repaint();
     }
 
     //TODO remove this before final implementation
@@ -156,25 +145,5 @@ public class Clickable_Panel extends JPanel{
             y >= renderimgcoords.y && 
             y <= renderimgcoords.y + 400;
 
-    }
-
-    //TODO TEST DELETE LATER:
-    private Point randomPointRoad(){
-        Random rand = new Random();
-        
-        int xr = 2048;
-        int yr = 2048;
-
-        int rx = 0;
-        int ry = 0; 
-
-        while(!map.roads[rx][ry]){
-            rx = rand.nextInt(xr);
-            ry = rand.nextInt(yr);
-        }
-        System.out.println(rx);
-        System.out.println(ry);
-
-        return new Point(rx, ry);
     }
 }

@@ -28,7 +28,9 @@ public class GUI{
         calc.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
+                panel.solve = true; 
                 solver.Solve(); 
+                panel.repaint();
             }
         });
         
@@ -38,7 +40,9 @@ public class GUI{
         wipe.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                panel.WipePanel();
+                panel.solve = false; 
+                map.delete_locations();
+                panel.repaint();
             }
         });
 
