@@ -3,16 +3,17 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 
 public class Map {
+
     public BufferedImage map_image; 
     public boolean[][] roads;
-
-    public int max_locations = 10;
+    public int max_locations = 5;
     public int num_locations = 0;
+    
     public ArrayList<Point> locations; 
+    public Point start_point; 
 
     public Map(){
 
@@ -66,7 +67,7 @@ public class Map {
     private boolean isRoad(int red, int green, int blue){
 
         boolean regular = red > 235 && green > 235 && blue > 235;
-        boolean highway = (236 <= red && red <= 255) && (231 <= green && green <= 255) && (195 <= blue && blue <= 230); //TODO find the right rgb values for highways and roads
+        boolean highway = (236 <= red && red <= 255) && (231 <= green && green <= 255) && (195 <= blue && blue <= 230); 
         boolean dirtroad = (175 <= red && red <= 207) && (140 <= green && green <= 180) && (90 <= blue && blue <= 130);
 
         return regular || highway || dirtroad;

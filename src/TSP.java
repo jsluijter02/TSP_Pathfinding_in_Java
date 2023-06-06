@@ -1,40 +1,47 @@
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.PriorityQueue;
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///A TSP solver, using ant colony optimization. To display the path and calculate the distance, we run A_star. ///
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class TSP {
 
-    public Clickable_Panel panel; 
     public Map map;
-    //panel object? so it can see which things we need
 
-    public TSP(Clickable_Panel c, Map m){
-        this.panel = c; 
+    public TSP(Map m){
         this.map = m;
     }
 
-    //TODO implement solving modes
+    //TODO implement solving modes? do i want different solvers
     public void Solve(){
-        //get all the locations
+        //TODO do i need this? 
         List<Point> locations = map.locations;
         boolean[][] roads = map.roads;
-        //TODO check which pixels on the map are road and initialize an array 
 
+        //AntColonyOptimization();
     }
 
-    //all 8 directions a pixel can travel to
-    private int[][] directions = new int[][]{
-        {-1, -1},
-        { -1, 0 },
-        { -1, 1 },
-        { 0, -1},
-        { 0, 1 },
-        { 1, -1},
-        {  1, 0 },
-        {  1, 1 }
-        };
+    //we use antcolony optimization to find the best combination of routes to take
+    private void AntColonyOptimization(){
+        int num_ants = 100;
+        boolean terminate = false;
+        Point start_point = map.start_point;
 
-    //heuristic distance for the points, euclidian distance
-    private double distance(Point p1, Point p2){
-        return Math.sqrt(Math.pow((p1.x - p2.x), 2) + Math.pow((p1.y - p2.y), 2));
+        int[][] pheromone = new int[map.map_image.getWidth()][map.map_image.getHeight()];
+
+        //1. pathfinding with A*
+        //initialize a closed graph between each of the points, so the ants know how far each node is from another one.
+        //then we can just run the regular ant colony program, treating the roads as if theyre straight. After the ants found the best path, we can draw the paths the A* algo found. 
+
+        A_star[] distances = new A_star[map.num_locations*map.num_locations - map.num_locations]; //we calculate all the distances between all points, except between same points, because that distance is 0
+        
+        //2.Run ant optimization
+        //loop for the ant algorithm
+        while(!terminate){
+            
+        } 
     }
 }

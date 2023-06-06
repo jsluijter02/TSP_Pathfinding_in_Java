@@ -7,14 +7,13 @@ public class GUI{
 
     public GUI(){
 
-        JFrame frame = new JFrame("TSP");
+        JFrame frame = new JFrame("Los Santos Travelling Sales Person");
         Map map = new Map();
-
+        
         Clickable_Panel panel = new Clickable_Panel(map);
         JButton calc = new JButton("Calculate Shortest Route", null);
         JButton wipe = new JButton("Delete all locations", null);
-
-        TSP solver  = new TSP(panel, map); //possibly add arguments from labels or menu options, and of course, the amount of dots on the screen
+        TSP solver  = new TSP(map); //possibly add arguments from labels or menu options, and of course, the amount of dots on the screen
 
         frame.setResizable(false);
         frame.setSize(800, 600);
@@ -33,6 +32,7 @@ public class GUI{
             }
         });
         
+        //wipe button
         wipe.setBounds(450, 460, 200, 50);
 
         wipe.addActionListener(new ActionListener() {
