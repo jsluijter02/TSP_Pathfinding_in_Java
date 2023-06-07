@@ -102,7 +102,6 @@ public class Clickable_Panel extends JPanel{
         g.drawImage(this.renderimg, 0, 0, null);
 
 
-        //TODO draw the path found
         if(solve){
             map.draw_path(g, Color.orange, renderimgcoords);
         }
@@ -112,6 +111,12 @@ public class Clickable_Panel extends JPanel{
         //checks whether the point should be drawn on screen by checking its coordinates and then drawing the on screen 
         for ( Point loca : map.locations) {
 
+            if(loca == map.start_point){
+                g.setColor(Color.red);
+            }
+            else{
+                g.setColor(Color.black);
+            }
             //if they fall between the rendered image coordinates, we want to draw them to the screen
             if(insideRenderBounds(loca.x, loca.y)){
 
