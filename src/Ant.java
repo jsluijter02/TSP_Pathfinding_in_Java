@@ -1,30 +1,36 @@
-import java.awt.Point;
+
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
 
 public class Ant {
 
     public int location; //location on index i of the arraylist of locations in Map class
+    public int num_locations; 
     public ArrayList<Edge> route;
     public int route_distance;
 
-    public HashSet<Integer> visited_nodes = new HashSet<Integer>();
-    public HashSet<Edge> visited_edges = new HashSet<Edge>();
+    private boolean[] visited; 
+    private boolean[][] visited_edges; 
 
 
-    public Ant(int start_point){
+    public Ant(int start_point, int num_locations){
         this.location = start_point;
+
         this.route = new ArrayList<Edge>();
+
+        this.visited = new boolean[num_locations]; 
+        this.visited[this.location] = true; 
+
+        this.visited_edges = new boolean[num_locations][num_locations]; 
     }
 
     public void Relocate(int new_location, int distance){
 
         Edge edge  = new Edge(location, new_location, distance); 
         this.route.add(edge);
-        this.visited_edges.add(edge);
 
-        this.visited_nodes.add(new_location); 
+        this.visited[new_location] = true; 
+        this.visited_edges[location][new_location] = true; 
+        
         this.location = new_location;
 
         this.route_distance += distance; 
@@ -35,11 +41,11 @@ public class Ant {
     //the visited is more for the main ACO algorithm and the visited_edge is meant for the pheromone update trails, 
     //to know which paths get pheromone added to them
     public boolean visited(int i) {
-        return this.visited_nodes.contains(i);
+        return this.visited[i];
     }   
 
-    public boolean visited_edge(int i, int j, int distance) {
-        return visited_edges.contains(new Edge(i, j, distance)); 
+    public boolean visited_edge(int i, int j) {
+       return visited_edges[i][j]; 
     }
 
 
@@ -55,12 +61,6 @@ public class Ant {
             this.distance = distance; 
         }
 
-        @Override 
-        public int hashCode(){
-            return Objects.hash(i,j);
-        }
     }
-
-
 
 }

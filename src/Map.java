@@ -72,9 +72,9 @@ public class Map {
     private boolean isRoad(int red, int green, int blue){
 
         //TODO: find the perfect rgb values, some parts seem to be closed off
-        boolean regular = red > 235 && green > 235 && blue > 235;
-        boolean highway = (236 <= red && red <= 255) && (231 <= green && green <= 255) && (195 <= blue && blue <= 230); 
-        boolean dirtroad = (175 <= red && red <= 207) && (140 <= green && green <= 180) && (90 <= blue && blue <= 130);
+        boolean regular = red > 220 && green > 220 && blue > 200;
+        boolean highway = (230 <= red && red <= 255) && (231 <= green && green <= 255) && (188 <= blue && blue <= 230); 
+        boolean dirtroad = (175 <= red && red <= 227) && (140 <= green && green <= 192) && (90 <= blue && blue <= 150);
 
         return regular || highway || dirtroad;
     }

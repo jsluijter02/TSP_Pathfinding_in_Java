@@ -123,23 +123,9 @@ public class Clickable_Panel extends JPanel{
                 g.fillOval(loca.x-renderimgcoords.x-5, loca.y-renderimgcoords.y-5, 10, 10);
 
             }
+            
         }
 
-    }
-
-    //TODO remove this before final implementation
-    //function that makes all the road pixels black
-    private void highlightRoads(Graphics g, Color c){
-        g.setColor(c);
-        for(int i = 0; i < map.map_image.getWidth(); i++){
-
-            for(int j = 0; j < map.map_image.getHeight(); j++){
-
-                if(map.isRoad(i, j) && insideRenderBounds(i, j)){
-                    g.fillRect(i - renderimgcoords.x, j-renderimgcoords.y, 1, 1);
-                }
-            }
-        }
     }
 
     //a function that helps to decide wether coords are inside of the render box or not
@@ -152,3 +138,18 @@ public class Clickable_Panel extends JPanel{
 
     }
 }
+
+    // //TODO remove this before final implementation
+    // //function that makes all the road pixels black
+    // private void highlightRoads(Graphics g, Color c){
+    //     g.setColor(c);
+    //     for(int i = 0; i < map.map_image.getWidth(); i++){
+
+    //         for(int j = 0; j < map.map_image.getHeight(); j++){
+
+    //             if(map.isRoad(i, j) && insideRenderBounds(i, j)){
+    //                 g.fillRect(i - renderimgcoords.x, j-renderimgcoords.y, 1, 1);
+    //             }
+    //         }
+    //     }
+    // }
