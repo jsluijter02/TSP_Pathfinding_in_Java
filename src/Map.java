@@ -63,7 +63,6 @@ public class Map {
 
     //two functions to decide wether a pixel is a road, the first one checks the array and is for outside of the map class,
     //the second is for within the class, when the map is first initialized
-    //TODO!! check if the road is a tunnel, or if it is going underneath another road, but this may be out of the scope for this project right now
     public boolean isRoad(int x, int y)
     {
         return roads[x][y];
@@ -71,7 +70,6 @@ public class Map {
 
     private boolean isRoad(int red, int green, int blue){
 
-        //TODO: find the perfect rgb values, some parts seem to be closed off
         boolean regular = red > 220 && green > 220 && blue > 200;
         boolean highway = (230 <= red && red <= 255) && (231 <= green && green <= 255) && (188 <= blue && blue <= 230); 
         boolean dirtroad = (175 <= red && red <= 227) && (140 <= green && green <= 192) && (90 <= blue && blue <= 150);
@@ -80,7 +78,6 @@ public class Map {
     }
 
     //deletes all the points on the panel
-    //TODO remove Astar paths as well.
     public void delete_locations(){
         num_locations = 0;
         locations = new ArrayList<Point>();

@@ -1,7 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
-
-import javax.swing.JOptionPane;
 import java.awt.Point;
 
 
@@ -21,12 +18,10 @@ public class Ant_Colony_Optimization {
 
     public Ant_Colony_Optimization(Map m){
 
-        JOptionPane.showMessageDialog(null, "Ant Optimization Algorithm in Progress... ", "Optimizer in Progress...", JOptionPane.DEFAULT_OPTION);
         this.map = m; 
         this.pheromone =  new double[this.map.num_locations][this.map.num_locations];
         this.distances = new int[this.map.num_locations][this.map.num_locations];
         
-
         get_A_stars();
 
         initialize_ants();
@@ -48,11 +43,10 @@ public class Ant_Colony_Optimization {
 
                 A_star new_route = new A_star(map, map.locations.get(i), map.locations.get(j));
 
+                //calculate ij and ji at the same time, as theyre the same going from and to (at least if you ignore the traffic rules)
                 a_stars[i][j] = new_route;  
                 a_stars[j][i] = new_route; 
-                distances[i][j] = new_route.path.size();  
-                System.out.println("Distances i: " +i+ " and j: " + j + " is: " + distances[i][j]);
-
+                distances[i][j] = new_route.path.size(); 
                 distances[j][i] = new_route.path.size();
 
             }
@@ -77,16 +71,14 @@ public class Ant_Colony_Optimization {
     //3. run the optimization loop
     private void ant_optimizer(){
         int num_iterations = 0;
-        int max_iterations = 100;
-        int max_noImprovement = 10; 
-        int noImprovement_iterations = 0; 
-        boolean terminate = false;
+        int max_iterations = 200;
+        //boolean terminate = false;
 
-        while(!terminate){
+        while(true){
 
             //check if the loop needs to be cut off
             if(num_iterations == max_iterations){
-                terminate = true;
+                
                 break;
             }
 
@@ -112,30 +104,29 @@ public class Ant_Colony_Optimization {
     }
 
     //these are extra functions, to help with the optimization and conciseness:
+    //select next location gets an ant and calculates what the most logical next move is, 
+    //according to its relocation probability
     private void select_nextLocation(Ant ant){
 
         int best_location = ant.location; 
         double best_relocation_prob = Double.NEGATIVE_INFINITY; 
         ArrayList<Integer> unvisited = new ArrayList<Integer>();
 
+        //so we check all of the locations on the map
         for(int j = 0; j < map.num_locations; j++){
 
+            //if the ant has not yet visited this node, and it is reachable, ie distance  > 0,
+            //we add it to the unvisited list and calculate its relocation prob, so we can find the best new location
             if(!ant.visited(j) && distances[ant.location][j] != 0){
                 unvisited.add(j);
-                double candidate_locationProb = relocation_probability(ant.location, j, ant);
+                double candidate_location_prob = relocation_probability(ant.location, j, ant);
 
-                if(candidate_locationProb > best_relocation_prob){
+                if(candidate_location_prob > best_relocation_prob){
                     best_location = j; 
-                    best_relocation_prob = candidate_locationProb; 
+                    best_relocation_prob = candidate_location_prob; 
                 }
             }
         }
-
-        if(best_relocation_prob == Double.NEGATIVE_INFINITY && unvisited.size() > 0){ //at the beginning all the pheromone = 0
-            best_location = unvisited.get(new Random().nextInt(unvisited.size())); 
-        }
-
-        //System.out.println("New location: " + best_location);
 
         ant.Relocate(best_location, distances[ant.location][best_location]);
     }
@@ -162,12 +153,6 @@ public class Ant_Colony_Optimization {
 
         double P = (Math.pow(t_ij, alpha) * Math.pow(eta_ij, beta)) / J_ik;
 
-        // System.out.println("for relocation from city "+ i + " to " + j + " :");
-        // System.out.println("Pheromone: " + t_ij);
-        // System.out.println("1/Distance: " + eta_ij);
-        // System.out.println("Sum of feasible moves: " + J_ik);
-        // System.out.println("Probability: " + P);
-
         return P;
     }
 
@@ -181,21 +166,16 @@ public class Ant_Colony_Optimization {
             for(int j = i+1; j < map.num_locations; j++){
             
                 //check how much pheromone to add to a specific edge,
-                //this is done by looping over the ants and if they took that edge,
-                //how far was their tour?
+                //this is done by looping over the ants and see if they took that edge,
+                //update the add pheromone according to how long their route was
                 double add_pheromone = 0.0;
                 for(Ant ant : ants){
                     if(ant.visited_edge(i,j)){
                         add_pheromone = add_pheromone +  1.0/ant.route_distance; 
-                        //System.out.println("Ant " + ant + " visited edge (" + i + ", " + j + "), distance = " + ant.route_distance + ", add_pheromone = " + add_pheromone);
-                    } else {
-                       // System.out.println("Ant " + ant + " did not visit edge (" + i + ", " + j + ")");
                     }
                 }
 
                 pheromone[i][j] = (1-evaporation_rate)*pheromone[i][j]+add_pheromone;
-
-               //System.out.println("Updated pheromone for edge (" + i + ", " + j + "): " + pheromone[i][j]);
             }
 
         }
@@ -211,17 +191,20 @@ public class Ant_Colony_Optimization {
         int current_location = 0;
         int new_location = 0;
 
+        //check which paths we already took
         boolean[] visited_locations = new boolean[map.num_locations];
         visited_locations[0] = true; 
         int num_locations_visited = 0;
 
+        //so while we have not yet visited all locations, we check which location still needs to be visited
+        //then, we choose the path with the highest pheromone and mark that location as visited
         while(num_locations_visited < map.num_locations){
 
             double max_pheromone = Double.NEGATIVE_INFINITY; 
 
-            for(int k = 0; k < map.num_locations; k++){
-                System.out.println("pheromone from edge: " + current_location + ", " + k + " = " + pheromone[current_location][k]);
-                if(!visited_locations[k] && pheromone[current_location][k] > max_pheromone){
+            for(int k = 1; k < map.num_locations; k++){
+
+                if(!visited_locations[k] && pheromone[current_location][k] > max_pheromone && distances[current_location][k] != 0){
                     new_location = k; 
                     max_pheromone = pheromone[current_location][k]; 
                 }
@@ -231,20 +214,20 @@ public class Ant_Colony_Optimization {
             visited_locations[new_location] = true; 
             num_locations_visited ++;
 
+            //if the distance isnt 0, that means we can make a path to that node
             if(distances[current_location][new_location] != 0){
 
                 A_star A = a_stars[current_location][new_location];
 
                 System.out.println("Going from location: " + current_location + " to: " + new_location);
 
+                //update the location so we go to the next one
                 current_location = new_location; 
 
+                //add the corresponding A star path to the maps path, so we can draw it to the screen as an intricate path, rather than a straight line
                 this.path.addAll(A.path);
             }
-
         }
-
     }  
-   
 }
 

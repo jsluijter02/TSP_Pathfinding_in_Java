@@ -13,7 +13,7 @@ public class GUI{
         Clickable_Panel panel = new Clickable_Panel(map);
         JButton calc = new JButton("Calculate Shortest Route", null);
         JButton wipe = new JButton("Delete all locations", null);
-        TSP solver  = new TSP(map); //possibly add arguments from labels or menu options, and of course, the amount of dots on the screen
+        TSP solver  = new TSP(map); 
 
         frame.setResizable(false);
         frame.setSize(800, 600);
@@ -23,6 +23,7 @@ public class GUI{
 
         panel.setBounds(10, 10, 780, 400);
         
+        //calculate shortest route button
         calc.setBounds(150, 460, 200, 50);
 
         calc.addActionListener(new ActionListener() {

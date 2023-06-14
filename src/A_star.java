@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.PriorityQueue;
 
 ////////////////////////////////////////////////////////////////////////////////////
-/// A* algorithm class for pathfinding
+/// A* algorithm class for pathfinding                                           ///
 ////////////////////////////////////////////////////////////////////////////////////
 
 public class A_star {
@@ -51,7 +51,6 @@ public class A_star {
             //if the node we selected is the goal node, we return the path, so we can draw it
             if(next.location.equals(this.end.location)){
 
-                System.out.println("End node found!");
                 return extract_path(this.end); 
 
             }
@@ -115,7 +114,7 @@ public class A_star {
             }
         }
 
-        System.out.println("no path found");
+        System.out.println("No path found");
         return new ArrayList<Point>();
     }
 

@@ -7,6 +7,9 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Clickable panel class, so you can click and scroll the map, also so you can draw paths to the map ///
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 public class Clickable_Panel extends JPanel{
     
     public Map map;
@@ -94,7 +97,7 @@ public class Clickable_Panel extends JPanel{
 
     }
 
-
+    //paint component function handling the drawing of the map, locations on the map and routes
     @Override
     protected void paintComponent(Graphics g){
 
@@ -103,7 +106,8 @@ public class Clickable_Panel extends JPanel{
 
 
         if(solve){
-            map.draw_path(g, Color.orange, renderimgcoords);
+            Color light_blue = new Color(51, 153, 255);
+            map.draw_path(g, light_blue, renderimgcoords);
         }
 
         g.setColor(Color.black);
@@ -111,12 +115,14 @@ public class Clickable_Panel extends JPanel{
         //checks whether the point should be drawn on screen by checking its coordinates and then drawing the on screen 
         for ( Point loca : map.locations) {
 
+            //we check the best route from the starting point, which is marked red
             if(loca == map.start_point){
                 g.setColor(Color.red);
             }
             else{
                 g.setColor(Color.black);
             }
+
             //if they fall between the rendered image coordinates, we want to draw them to the screen
             if(insideRenderBounds(loca.x, loca.y)){
 
@@ -138,18 +144,3 @@ public class Clickable_Panel extends JPanel{
 
     }
 }
-
-    // //TODO remove this before final implementation
-    // //function that makes all the road pixels black
-    // private void highlightRoads(Graphics g, Color c){
-    //     g.setColor(c);
-    //     for(int i = 0; i < map.map_image.getWidth(); i++){
-
-    //         for(int j = 0; j < map.map_image.getHeight(); j++){
-
-    //             if(map.isRoad(i, j) && insideRenderBounds(i, j)){
-    //                 g.fillRect(i - renderimgcoords.x, j-renderimgcoords.y, 1, 1);
-    //             }
-    //         }
-    //     }
-    // }
